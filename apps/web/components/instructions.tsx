@@ -13,6 +13,7 @@ import {
 } from "@repo/ui/primitives/drawer";
 import { FeatureChecklist } from "./feature-checklist";
 import { ListTodoIcon } from "@repo/ui/icons";
+import Link from "next/link";
 
 export function InstructionsDrawer() {
   return (
@@ -38,7 +39,17 @@ export function InstructionsDrawer() {
               <DrawerDescription className="text-foreground text-base">
                 upvote is a simple tool to collect feedback and publicly share
                 it with the world. Any user can submit a feedback card and
-                upvote as many cards as they want.
+                upvote as many cards as they want. Think of it as a simplified
+                version of{" "}
+                <Link
+                  href="https://feedback.render.com/features"
+                  className="text-primary font-medium hover:underline"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  this example
+                </Link>
+                .
               </DrawerDescription>
             </DrawerHeader>
 
