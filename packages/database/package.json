@@ -1,0 +1,24 @@
+{
+  "name": "@repo/database",
+  "version": "0.0.0",
+  "main": "./index.ts",
+  "types": "./index.ts",
+  "scripts": {
+    "analyze": "prisma generate --no-hints --schema=./prisma/schema.prisma",
+    "build": "prisma generate --no-hints --schema=./prisma/schema.prisma",
+    "db:migrate": "prisma migrate dev --schema=./prisma/schema.prisma",
+    "db:up": "docker compose up -d"
+  },
+  "dependencies": {
+    "@prisma/client": "6.14.0",
+    "server-only": "^0.0.1",
+    "zod": "^3.25.76",
+    "zod-prisma-types": "^3.2.4"
+  },
+  "devDependencies": {
+    "@repo/typescript-config": "workspace:*",
+    "@types/node": "22.15.21",
+    "prisma": "6.14.0",
+    "typescript": "5.9.2"
+  }
+}

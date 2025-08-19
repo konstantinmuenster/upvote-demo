@@ -1,0 +1,15 @@
+services:
+  postgres:
+    image: postgres:16
+    container_name: upvote_demo_postgres
+    environment:
+      POSTGRES_USER: upvote_demo
+      POSTGRES_PASSWORD: upvote_demo
+      POSTGRES_DB: upvote_demo_db
+    ports:
+      - "5434:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+volumes:
+  postgres_data:

@@ -1,0 +1,4 @@
+generated/client
+generated/zod
+
+.env

@@ -1,135 +1,250 @@
-# Turborepo starter
+# upvote Demo ⬆︎
 
-This Turborepo starter is maintained by the Turborepo core team.
+A modern full-stack application built with Next.js, Prisma, PostgreSQL, and TypeScript in a Turborepo monorepo structure.
 
-## Using this example
+## What's Inside?
 
-Run the following command:
+This repository contains the following packages and apps:
 
-```sh
-npx create-turbo@latest
+### Apps
+
+- **`web`**: Main Next.js application with Tailwind CSS
+- **`studio`**: Prisma Studio interface for database management
+
+### Packages
+
+- **`@repo/database`**: Database package with Prisma client, schema, and PostgreSQL setup
+- **`@repo/ui`**: Shared React component library with shadcn/ui components
+- **`@repo/eslint-config`**: Shared ESLint configurations
+- **`@repo/typescript-config`**: Shared TypeScript configurations
+
+## Prerequisites
+
+- **Node.js** 18+
+- **pnpm** 9.0.0+ (defined in `packageManager`)
+- **Docker** (for PostgreSQL database)
+
+## Getting Started
+
+### 1. Clone and Install Dependencies
+
+```bash
+git clone https://github.com/konstantinmuenster/upvote-demo.git
+cd upvote-demo
+pnpm install
 ```
 
-## What's inside?
+### 2. Database Setup
 
-This Turborepo includes the following packages/apps:
+The project uses PostgreSQL running in Docker with Prisma as the ORM.
 
-### Apps and Packages
+#### Start the Database
 
-- `docs`: a [Next.js](https://nextjs.org/) app
-- `web`: another [Next.js](https://nextjs.org/) app
-- `@repo/ui`: a stub React component library shared by both `web` and `docs` applications
-- `@repo/eslint-config`: `eslint` configurations (includes `eslint-config-next` and `eslint-config-prettier`)
-- `@repo/typescript-config`: `tsconfig.json`s used throughout the monorepo
+```bash
+# Navigate to the database package
+cd packages/database
 
-Each package/app is 100% [TypeScript](https://www.typescriptlang.org/).
-
-### Utilities
-
-This Turborepo has some additional tools already setup for you:
-
-- [TypeScript](https://www.typescriptlang.org/) for static type checking
-- [ESLint](https://eslint.org/) for code linting
-- [Prettier](https://prettier.io) for code formatting
-
-### Build
-
-To build all apps and packages, run the following command:
-
-```
-cd my-turborepo
-
-# With [global `turbo`](https://turborepo.com/docs/getting-started/installation#global-installation) installed (recommended)
-turbo build
-
-# Without [global `turbo`](https://turborepo.com/docs/getting-started/installation#global-installation), use your package manager
-npx turbo build
-yarn dlx turbo build
-pnpm exec turbo build
+# Start PostgreSQL with Docker Compose
+pnpm db:up
 ```
 
-You can build a specific package by using a [filter](https://turborepo.com/docs/crafting-your-repository/running-tasks#using-filters):
+This will start a PostgreSQL container with the following configuration:
 
-```
-# With [global `turbo`](https://turborepo.com/docs/getting-started/installation#global-installation) installed (recommended)
-turbo build --filter=docs
+- **Host**: localhost
+- **Port**: 5433
+- **Database**: upvote_demo_db
+- **Username**: upvote_demo
+- **Password**: upvote_demo
 
-# Without [global `turbo`](https://turborepo.com/docs/getting-started/installation#global-installation), use your package manager
-npx turbo build --filter=docs
-yarn exec turbo build --filter=docs
-pnpm exec turbo build --filter=docs
-```
+#### Set Up Environment Variables
 
-### Develop
+Create a `.env` file in the `packages/database` directory:
 
-To develop all apps and packages, run the following command:
-
-```
-cd my-turborepo
-
-# With [global `turbo`](https://turborepo.com/docs/getting-started/installation#global-installation) installed (recommended)
-turbo dev
-
-# Without [global `turbo`](https://turborepo.com/docs/getting-started/installation#global-installation), use your package manager
-npx turbo dev
-yarn exec turbo dev
-pnpm exec turbo dev
+```bash
+# packages/database/.env
+DATABASE_URL="postgresql://upvote_demo:upvote_demo@localhost:5433/upvote_demo_db"
 ```
 
-You can develop a specific package by using a [filter](https://turborepo.com/docs/crafting-your-repository/running-tasks#using-filters):
+#### Run Database Migrations
 
+```bash
+# From packages/database directory
+pnpm db:migrate
 ```
-# With [global `turbo`](https://turborepo.com/docs/getting-started/installation#global-installation) installed (recommended)
+
+This will:
+
+- Apply the initial migration creating the `Feedback` table
+- Generate the Prisma client
+- Generate Zod schemas for type validation
+
+#### Database Schema
+
+The current schema includes:
+
+- **Feedback** table with fields: `id`, `message`, `upvotes`, `createdAt`, `updatedAt`
+
+### 3. Generate Database Client
+
+```bash
+# From packages/database directory
+pnpm build
+```
+
+This generates the Prisma client and Zod schemas used throughout the application.
+
+### 4. Start Development Servers
+
+From the project root:
+
+```bash
+# Start all development servers
+pnpm dev
+```
+
+This will start:
+
+- **Web app**: http://localhost:3000
+- **Prisma Studio**: http://localhost:3005 (database management interface)
+
+You can also start individual apps:
+
+```bash
+# Start only the web app
 turbo dev --filter=web
 
-# Without [global `turbo`](https://turborepo.com/docs/getting-started/installation#global-installation), use your package manager
-npx turbo dev --filter=web
-yarn exec turbo dev --filter=web
-pnpm exec turbo dev --filter=web
+# Start only Prisma Studio
+turbo dev --filter=studio
 ```
 
-### Remote Caching
+## Available Scripts
 
-> [!TIP]
-> Vercel Remote Cache is free for all plans. Get started today at [vercel.com](https://vercel.com/signup?/signup?utm_source=remote-cache-sdk&utm_campaign=free_remote_cache).
+### Root Level Scripts
 
-Turborepo can use a technique known as [Remote Caching](https://turborepo.com/docs/core-concepts/remote-caching) to share cache artifacts across machines, enabling you to share build caches with your team and CI/CD pipelines.
+```bash
+# Start all apps in development mode
+pnpm dev
 
-By default, Turborepo will cache locally. To enable Remote Caching you will need an account with Vercel. If you don't have an account you can [create one](https://vercel.com/signup?utm_source=turborepo-examples), then enter the following commands:
+# Build all packages and apps
+pnpm build
 
-```
-cd my-turborepo
+# Lint all packages and apps
+pnpm lint
 
-# With [global `turbo`](https://turborepo.com/docs/getting-started/installation#global-installation) installed (recommended)
-turbo login
+# Format code
+pnpm format
 
-# Without [global `turbo`](https://turborepo.com/docs/getting-started/installation#global-installation), use your package manager
-npx turbo login
-yarn exec turbo login
-pnpm exec turbo login
-```
-
-This will authenticate the Turborepo CLI with your [Vercel account](https://vercel.com/docs/concepts/personal-accounts/overview).
-
-Next, you can link your Turborepo to your Remote Cache by running the following command from the root of your Turborepo:
-
-```
-# With [global `turbo`](https://turborepo.com/docs/getting-started/installation#global-installation) installed (recommended)
-turbo link
-
-# Without [global `turbo`](https://turborepo.com/docs/getting-started/installation#global-installation), use your package manager
-npx turbo link
-yarn exec turbo link
-pnpm exec turbo link
+# Type check all packages and apps
+pnpm check-types
 ```
 
-## Useful Links
+### Database Scripts
 
-Learn more about the power of Turborepo:
+```bash
+# From packages/database directory
 
-- [Tasks](https://turborepo.com/docs/crafting-your-repository/running-tasks)
-- [Caching](https://turborepo.com/docs/crafting-your-repository/caching)
-- [Remote Caching](https://turborepo.com/docs/core-concepts/remote-caching)
-- [Filtering](https://turborepo.com/docs/crafting-your-repository/running-tasks#using-filters)
-- [Configuration Options](https://turborepo.com/docs/reference/configuration)
-- [CLI Usage](https://turborepo.com/docs/reference/command-line-reference)
+# Start PostgreSQL container
+pnpm db:up
+
+# Run database migrations
+pnpm db:migrate
+
+# Generate Prisma client and Zod schemas
+pnpm build
+```
+
+### Web App Scripts
+
+```bash
+# From apps/web directory
+
+# Start development server
+pnpm dev
+
+# Build for production
+pnpm build
+
+# Start production server
+pnpm start
+
+# Lint code
+pnpm lint
+
+# Type check
+pnpm check-types
+```
+
+## Project Structure
+
+```
+upvote-demo/
+├── apps/
+│   ├── web/                 # Next.js web application
+│   └── studio/              # Prisma Studio app
+├── packages/
+│   ├── database/            # Database package with Prisma
+│   │   ├── prisma/          # Prisma schema and migrations
+│   │   ├── generated/       # Generated Prisma client and Zod schemas
+│   │   └── docker-compose.yaml
+│   ├── ui/                  # Shared UI components
+│   ├── eslint-config/       # Shared ESLint config
+│   └── typescript-config/   # Shared TypeScript config
+└── package.json             # Root package.json with workspace scripts
+```
+
+## Technology Stack
+
+- **Frontend**: Next.js 15, React 19, Tailwind CSS
+- **Backend**: Prisma ORM, PostgreSQL
+- **UI Components**: Radix UI, shadcn/ui components
+- **Validation**: Zod
+- **Build System**: Turborepo
+- **Package Manager**: pnpm
+- **TypeScript**: Full type safety across the monorepo
+
+## Database Management
+
+### Prisma Studio
+
+Access the database management interface at http://localhost:3005 when running `pnpm dev`.
+
+### Adding New Database Changes
+
+1. Modify the schema in `packages/database/prisma/schema.prisma`
+2. Run migrations: `pnpm db:migrate`
+3. Regenerate client: `pnpm build`
+
+### Resetting the Database
+
+```bash
+# From packages/database directory
+docker compose down -v  # Remove container and volumes
+pnpm db:up             # Start fresh container
+pnpm db:migrate        # Apply migrations
+```
+
+## Development Workflow
+
+1. **Database changes**: Modify schema → run migration → regenerate client
+2. **UI components**: Add to `packages/ui` → import in `apps/web`
+3. **Feature development**: Work in `apps/web` using shared packages
+4. **Type safety**: Generated Prisma client and Zod schemas ensure end-to-end type safety
+
+## Troubleshooting
+
+### Database Connection Issues
+
+- Ensure Docker is running
+- Check if port 5433 is available
+- Verify the DATABASE_URL environment variable
+
+### Build Issues
+
+- Run `pnpm install` from the root
+- Ensure all packages are built: `pnpm build`
+- Clear Turborepo cache: `rm -rf .turbo`
+
+### Type Errors
+
+- Regenerate Prisma client: `cd packages/database && pnpm build`
+- Check TypeScript configuration in each package
